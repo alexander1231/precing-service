@@ -1,6 +1,6 @@
 from models.alert import Alert
 
-alerts = Alert.all()[0]
+alerts = Alert.all()
 
 for alert in alerts:
     alert.load_item_price()

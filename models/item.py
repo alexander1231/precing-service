@@ -2,23 +2,25 @@ import re
 import uuid
 from typing import Dict
 import requests
+from dataclasses import dataclass, field
 from bs4 import BeautifulSoup
 from models.model import Model
 
 
+@classmethod(eq=False)
 class Item(Model):
-    collection = "items"
+    collection: str = field(init=False, default="items")
+    url: str
+    tag_name: str
+    query: Dict
+    price: float = field(default=None)
+    _id: str = field(default_factory=lambda: uuid.uuid4().hex)
 
-    def __init__(self, url: str, tag_name: str, query: Dict, _id: str = None):
-        super().__init__()
-        self.url = url
-        self.tag_name = tag_name
-        self.query = query
-        self.price = None
-        self._id = _id or uuid.uuid4().hex
+    # def __post_init__(self):
+    #     self.price = None
 
-    def __repr__(self):
-        return '<Item %s>' % self.url
+    # def __repr__(self):
+    #     return '<Item %s>' % self.url
 
     def load_price(self) -> float:
         response = requests.get(self.url)
@@ -39,5 +41,6 @@ class Item(Model):
             "_id": self._id,
             "url": self.url,
             "tag_name": self.tag_name,
+            "price": self.price,
             "query": self.query,
         }
